@@ -1,0 +1,103 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hero - Admin</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <style>
+        .hero-list img {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="page-header container">
+            <h1>王者荣耀 <small>英雄管理器</small></h1>
+        </div>
+    </header>
+    <div class="container hero-list">
+        <form>
+            <table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <td>姓名：</td>
+                        <td><input type="text" name="name" value="{{name}}"></td>
+                    </tr>
+                    <tr>
+                        <td>性别：</td>
+                        <td>
+                            <input id="nan" name="gender" value="男" type="radio" {{gender== '男' ? 'checked': '' }}><label for="nan">男</label>
+                            <input name="gender" value="女" type="radio" id="nv" {{gender== '女' ? 'checked': '' }}><label for="nv">女</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>头像：</td>
+                        <td><img src="/images/{{img}}" alt="" id="photo" width="100"  style='border: 1px solid #ccc;margin-bottom: 5px;'>
+                            <input type="file" id="img"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="button" id="sub" value="编辑"></td>
+                    </tr>
+                        <!-- 隐藏域 -->
+                        <input type="hidden" name='img' class='myimg' value="{{img}}">
+                        <input type="hidden" name='id' class='myid' value="{{id}}">
+                </tbody>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+<script src="/js/jquery.min.js"></script>
+<script>
+         $(function(){
+            //上传图片信息
+            $('#img').on('change',() =>{
+                //文件上传方式
+                var formdata = new FormData()
+                //文件对象
+                var fileImg = document.querySelector('#img').files[0]
+                //文件上传方法
+                formdata.append('img',fileImg)
+
+                //写ajax
+                $.ajax({
+                    type : 'post',
+                    url : '/uploadFile',
+                    data : formdata,
+                    processData : false,
+                    contentType : false,
+                    dataType : 'json',
+                    success : (result) =>{
+                        // console.log(result)
+                       $('#photo').attr('src','/images/' + result.img)
+                       //把图片得name属性传进来
+                       $('.myimg').val(result.img)
+                    }
+                })
+            })
+
+            $('#sub').on('click',() => {
+                $.ajax({
+                    type : 'post',
+                    url : '/edit',
+                    data : $('form').serialize(),
+                    dataType : 'json',
+                    success : function(result){
+                        console.log(result)
+                        if(result.code == 200){
+                            alert(result.msg)
+                            location.href = '/'
+                        }else{
+                            alert(result.msg)
+                        }
+                    }
+                })
+            })
+        })
+</script>
+
+
+
